@@ -13,14 +13,6 @@ class Timeout(Exception):
     """Subclass base exception for code clarity."""
     pass
 
-def heuristic2(game,player):
-    loc = game.get_player_location(player)
-    r, c = loc
-    directions = [(0, 1), (0, -1), (1, 0), (-1, 0),
-                  (1, 1), (1, -1), (-1, 1), (-1, -1)]
-    num_spaces = [(r + dr, c + dc) for dr, dc in directions
-                   if game.move_is_legal((r + dr, c + dc))]
-
 def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
     of the given player.
@@ -56,6 +48,51 @@ def custom_score(game, player):
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
     filled = game.width*game.height - len(game.get_blank_spaces())
     return float((own_moves - 3*opp_moves) * filled)
+	
+
+def custom_score_2(game,player):
+    loc = game.get_player_location(player)
+    r, c = loc
+    directions = [(0, 2), (0, -2), (2, 0), (-2, 0),
+                  (2, 2), (2, -2), (-2, 2), (-2, -2)]
+    num_spaces = [(r + dr, c + dc) for dr, dc in directions
+                   if game.move_is_legal((r + dr, c + dc))]
+    return 	float(len(num_spaces)/5.0 * len(game.get_legal_moves(player)))
+	
+def custom_score_3(game, player):
+    """Calculate the heuristic value of a game state from the point of view
+    of the given player.
+
+    Note: this function should be called from within a Player instance as
+    `self.score()` -- you should not need to call this function directly.
+
+    Parameters
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
+
+    player : object
+        A player instance in the current game (i.e., an object corresponding to
+        one of the player objects `game.__player_1__` or `game.__player_2__`.)
+
+    Returns
+    -------
+    float
+        The heuristic value of the current game state to the specified player.
+    """
+
+    # TODO: finish this function!
+    #raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    return float((own_moves))
+
 
 class CustomPlayer:
     """Game-playing agent that chooses a move using your evaluation function
@@ -212,7 +249,7 @@ class CustomPlayer:
                 to pass the project unit tests; you cannot call any other
                 evaluation function directly.
         """
-        if self.time_left() < self.TIMER_THRESHOLD:
+        if (self.time_left() - 2) < self.TIMER_THRESHOLD:
             raise Timeout()
 
         if depth == 0:  # End search if we reach max depth
@@ -281,7 +318,7 @@ class CustomPlayer:
                 to pass the project unit tests; you cannot call any other
                 evaluation function directly.
         """
-        if self.time_left() < self.TIMER_THRESHOLD:
+        if (self.time_left() - 2) < self.TIMER_THRESHOLD:
             raise Timeout()
 
         if depth == 0:  # End search if we reach max depth
